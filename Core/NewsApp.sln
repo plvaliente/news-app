@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsApp.Api", "NewsApp.Api\NewsApp.Api.csproj", "{4E3546A1-F4AF-4A40-8986-32D041E2D26D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewsApp.Api", "NewsApp.Api\NewsApp.Api.csproj", "{4E3546A1-F4AF-4A40-8986-32D041E2D26D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0.Management", "0.Management", "{38CAA21A-722E-4531-8938-9C0B6E3C1573}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Application", "1.Application", "{74A090CF-FBAE-4227-8423-5A4131694179}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.External", "2.External", "{1D735755-8877-4B03-9A6C-A54EE14307AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewsApp.External.Services", "NewsApp.External.Services\NewsApp.External.Services.csproj", "{8465AD2D-7715-4AF8-BC5C-22B3D99F3D01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +23,16 @@ Global
 		{4E3546A1-F4AF-4A40-8986-32D041E2D26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E3546A1-F4AF-4A40-8986-32D041E2D26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E3546A1-F4AF-4A40-8986-32D041E2D26D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8465AD2D-7715-4AF8-BC5C-22B3D99F3D01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8465AD2D-7715-4AF8-BC5C-22B3D99F3D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8465AD2D-7715-4AF8-BC5C-22B3D99F3D01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8465AD2D-7715-4AF8-BC5C-22B3D99F3D01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8465AD2D-7715-4AF8-BC5C-22B3D99F3D01} = {1D735755-8877-4B03-9A6C-A54EE14307AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {80B3A852-88ED-4E74-B019-93607A6CF6C9}
