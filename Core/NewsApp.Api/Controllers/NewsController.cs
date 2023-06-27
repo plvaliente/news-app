@@ -1,52 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NewsApp.CrossCuttingApp.Dto;
+using NewsApp.Services.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace NewsApp.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class NewsController : ControllerBase
+    public class NewsController : BaseController
     {
-        private readonly ILogger<NewsController> _logger;
+        private readonly INewsService _service;
 
-        public NewsController(ILogger<NewsController> logger)
+        public NewsController(ILogger<NewsController> logger, INewsService service) : base(logger)
         {
-            _logger = logger;
+            _service = service;
         }
 
         [Route("search")]
-        public ActionResult<object> Search(DateTime? dateFrom, DateTime? dateTo, string[] keywords, int page, int pageSize)
+        public ActionResult<NewsResponseDto> Search(DateTime? dateFrom, DateTime? dateTo, [FromQuery] string[] keywords, int page, int pageSize)
         {
-            try
-            {
-                if (keywords.Length == 0 || page == 0 || pageSize == 0) return BadRequest(new object());
+            return DoMethod<NewsResponseDto>(
 
-                return Ok(new object()); ;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode((int)HttpStatusCode.InternalServerError, new object());
-            }
+                keywords == null || keywords.Length == 0 || page == 0 || pageSize == 0,
+                () =>
+                {
+                    return _service.Search(new SearchRequestDto
+                    {
+                        DateFrom = dateFrom,
+                        DateTo = dateTo,
+                        Keywords = new List<string>(keywords),
+                        Page = page,
+                        PageSize = pageSize
+                    });
+                }
+            );
         }
 
         [Route("top-headlines")]
-        public ActionResult<object> HeadLines(string country, int page, int pageSize)
+        public ActionResult<NewsResponseDto> HeadLines(string country, int page, int pageSize)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(country) || page == 0 || pageSize == 0) return BadRequest(new object());
-
-                return Ok(new object()); ;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode((int)HttpStatusCode.InternalServerError, new object());
-            }
+            return DoMethod<NewsResponseDto>(
+                string.IsNullOrWhiteSpace(country) || page == 0 || pageSize == 0,
+                () => _service.TopHeadlines(new TopHeadlinesRequestDto { Country = country, Page = page, PageSize = pageSize })
+                );
         }
     }
 }

@@ -1,0 +1,336 @@
+{
+	"info": {
+		"_postman_id": "8e304a33-fd86-4234-ac72-6178d5949e99",
+		"name": "NewsApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28203857"
+	},
+	"item": [
+		{
+			"name": "TopHeadlines",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response must be valid and have a body\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"pm.test(\"Is successful\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.success).to.eql(true);\r",
+							"});\r",
+							"pm.test(\"Data lenght OK\", function () {\r",
+							"    var pageSize = pm.request.url.query.get(\"pageSize\");\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.data).to.length(pageSize);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/news/top-headlines?country=AR&page=2&pageSize=5",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"news",
+						"top-headlines"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "AR"
+						},
+						{
+							"key": "page",
+							"value": "2"
+						},
+						{
+							"key": "pageSize",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TopHeadlines Bad requests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"function test(name){\r",
+							"    pm.test(`${name}: Gets badRequest`, function () {\r",
+							"        pm.response.to.have.status(400);\r",
+							"        pm.response.to.be.badRequest;\r",
+							"        pm.response.to.be.withBody;\r",
+							"        pm.response.to.be.json;\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"function add(key, val){\r",
+							"    pm.request.addQueryParams(`${key}=${val}`)\r",
+							"}\r",
+							"function addTest(key, val, name){\r",
+							"    pm.request.addQueryParams(`${key}=${val}`)\r",
+							"    test(name)\r",
+							"}\r",
+							"\r",
+							"function addTestRemove(key, val, name){\r",
+							"    pm.request.addQueryParams(`${key}=${val}`)\r",
+							"    test(name)\r",
+							"    pm.request.removeQueryParams(`${key}`)\r",
+							"}\r",
+							"\r",
+							"test(\"Sin Params\")\r",
+							"addTestRemove(\"country\", \"AR\", \"Country param\")\r",
+							"addTestRemove(\"page\", \"0\", \"Page param\")\r",
+							"addTestRemove(\"pageSize\", \"0\", \"PageSize param\")\r",
+							"add(\"country\", \"AR\")\r",
+							"add(\"page\", \"0\")\r",
+							"add(\"pageSize\", \"0\")\r",
+							"test(\"Default values params\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/news/top-headlines",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"news",
+						"top-headlines"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response must be valid and have a body\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"pm.test(\"Is successful\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.success).to.eql(true);\r",
+							"});\r",
+							"pm.test(\"Data lenght OK\", function () {\r",
+							"    var pageSize = pm.request.url.query.get(\"pageSize\");\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.data).to.length(pageSize);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"DateFrom is smaller or Equal OK\", function () {\r",
+							"    var dateFrom = new Date(pm.request.url.query.get(\"dateFrom\"))\r",
+							"        .getUTCDate();\r",
+							"    var jsonData = pm.response.json();\r",
+							"    for (let i = 0; i < jsonData.data.length; i++){\r",
+							"        var castedDate = new Date(jsonData.data[i].date).getUTCDate();\r",
+							"        pm.expect(castedDate).to.be.gte(dateFrom);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"pm.test(\"DateTo is Bigger or Equal OK\", function () {\r",
+							"    var dateTo = new Date(pm.request.url.query.get(\"dateTo\"))\r",
+							"        .getUTCDate();\r",
+							"    var jsonData = pm.response.json();\r",
+							"    for (let i = 0; i < jsonData.data.length; i++){\r",
+							"        var castedDate = new Date(jsonData.data[i].date).getUTCDate();\r",
+							"        pm.expect(castedDate).to.be.lte(dateTo);\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/news/search?dateFrom=2023-06-20&page=1&pageSize=10&keywords=futbol&dateTo=2023-06-24",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"news",
+						"search"
+					],
+					"query": [
+						{
+							"key": "dateFrom",
+							"value": "2023-06-20"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						},
+						{
+							"key": "keywords",
+							"value": "futbol"
+						},
+						{
+							"key": "keywords",
+							"value": "gol",
+							"disabled": true
+						},
+						{
+							"key": "dateTo",
+							"value": "2023-06-24"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Bad requests",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"function test(name){\r",
+							"    pm.test(`${name}: Gets badRequest`, function () {\r",
+							"        pm.response.to.have.status(400);\r",
+							"        pm.response.to.be.badRequest;\r",
+							"        pm.response.to.be.withBody;\r",
+							"        pm.response.to.be.json;\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"function add(key, val){\r",
+							"    pm.request.addQueryParams(`${key}=${val}`)\r",
+							"}\r",
+							"function addTest(key, val, name){\r",
+							"    pm.request.addQueryParams(`${key}=${val}`)\r",
+							"    test(name)\r",
+							"}\r",
+							"\r",
+							"function addTestRemove(key, val, name){\r",
+							"    pm.request.addQueryParams(`${key}=${val}`)\r",
+							"    test(name)\r",
+							"    pm.request.removeQueryParams(`${key}`)\r",
+							"}\r",
+							"\r",
+							"test(\"Sin Params\")\r",
+							"addTestRemove(\"keywords\", [], \"Keywords param\")\r",
+							"addTestRemove(\"page\", \"0\", \"Page param\")\r",
+							"addTestRemove(\"pageSize\", \"0\", \"PageSize param\")\r",
+							"add(\"keywords\", [])\r",
+							"add(\"page\", \"0\")\r",
+							"add(\"pageSize\", \"0\")\r",
+							"test(\"Default values params\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/news/search",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"news",
+						"search"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "API_URL",
+			"value": "https://localhost:44376/api",
+			"type": "string"
+		}
+	]
+}

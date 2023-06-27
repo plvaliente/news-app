@@ -5,22 +5,22 @@ using NewsAPI.Constants;
 using NewsAPI.Models;
 using NewsApp.CrossCuttingApp.Dto;
 using NewsApp.CrossCuttingApp.Entities;
+using NewsApp.Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace NewsApp.External.Services
 {
-    public class NewsApiService : INewsApiService
+    public class NewsApiService : IExternalNewsService
     {
         private readonly string _apiKey;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly NewsApiClient _client;
 
-        public NewsApiService(IConfiguration conf, ILogger logger)
+        public NewsApiService(IConfiguration conf, ILogger<NewsApiService> logger)
         {
             _configuration = conf;
             _logger = logger;
@@ -28,48 +28,69 @@ namespace NewsApp.External.Services
             _client = new NewsApiClient(_apiKey);
         }
 
-        public async Task<NewsResponseDto> Search(SearchRequestDto dto)
+        public NewsResponse Search(SearchRequestDto dto)
         {
-            ArticlesResult result = await _client.GetEverythingAsync(new EverythingRequest
+            return GetNews(() =>
             {
-                From = dto.DateFrom, 
-                To = dto.DateTo, 
-                Page = dto.Page,
-                PageSize = dto.PageSize, 
-                Q = FormatKeyWords(dto.Keywords), 
-                SortBy = SortBys.PublishedAt, 
-                Language = Languages.ES
+                return _client.GetEverything(new EverythingRequest
+                {
+                    From = dto.DateFrom,
+                    To = dto.DateTo,
+                    Page = dto.Page,
+                    PageSize = dto.PageSize,
+                    Q = FormatKeyWords(dto.Keywords),
+                    SortBy = SortBys.PublishedAt,
+                    Language = Languages.ES
+                });
             });
-
-            return HandleArticleResult(result);
         }
 
-        public async Task<NewsResponseDto> TopHeadlines(TopHeadlinesRequestDto dto)
+        public NewsResponse TopHeadlines(TopHeadlinesRequestDto dto)
         {
-            ArticlesResult result = await _client.GetTopHeadlinesAsync(new TopHeadlinesRequest
+            return GetNews(() =>
             {
-                Country = FormatCountry(dto.Country), 
-                Page = dto.Page, 
-                PageSize= dto.PageSize,
+                return _client.GetTopHeadlines(new TopHeadlinesRequest
+                {
+                    Country = ParseCountry(dto.Country),
+                    Page = dto.Page,
+                    PageSize = dto.PageSize,
+                });
             });
+        }
+        private NewsResponse GetNews(Func<ArticlesResult> method)
+        {
+            try
+            {
+                ArticlesResult result = method();
 
-            return HandleArticleResult(result);
+                return HandleArticleResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"NewsApiSvc: {ex.Message}", ex);
+                return new NewsResponse { Error = ex.Message };
+            }
         }
 
-        private NewsResponseDto HandleArticleResult(ArticlesResult result)
+        private NewsResponse HandleArticleResult(ArticlesResult result)
         {
             if (result.Status != Statuses.Ok)
             {
                 _logger.LogInformation($"NewsApiSvc: {result.Error.Message}");
-                return new NewsResponseDto(result.Error.Message);
+                return new NewsResponse {  Error = result.Error.Message };
             }
 
-            return new NewsResponseDto(result.Articles.Select(i => MapToNewsDto(i)).ToList(), result.TotalResults);
+            return new NewsResponse
+            {
+                News = result.Articles.Select(i => MapToNews(i)).ToList(),
+                MatchingNews = result.TotalResults,
+                Success = true
+            };
         }
 
-        private NewsDto MapToNewsDto(Article i)
+        private News MapToNews(Article i)
         {
-            return new NewsDto
+            return new News
             {
                 Author = i.Author,
                 Title = i.Title,
@@ -83,12 +104,13 @@ namespace NewsApp.External.Services
 
         private string FormatKeyWords(List<string> keywords)
         {
-            string appendedKeyords = keywords.Aggregate((fst, snd) => fst + " OR " + snd);
+            string appendedKeyords = keywords.Aggregate((fst, snd) => fst + " AND " + snd);
             return HttpUtility.UrlEncode(appendedKeyords);
         }
-        private Countries? FormatCountry(Country country)
+
+        private Countries? ParseCountry(string country)
         {
-            throw new NotImplementedException();
+            return Enum.TryParse<Countries>(country, true, out Countries result) ? result : default;
         }
     }
 }

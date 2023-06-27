@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NewsApp.Api.Mapper;
+using NewsApp.CrossCuttingApp.Mapper;
 using NewsApp.External.Services;
 using NewsApp.Services.Contracts;
 using NewsApp.Services.Services;
@@ -23,7 +23,7 @@ namespace NewsApp.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INewsService, NewsService>();
-            services.AddScoped<INewsApiService, NewsApiService>();
+            services.AddScoped<IExternalNewsService, NewsApiService>();
             services.AddAutoMapper(typeof(MapperConfig));
             services.AddControllers();
         }
