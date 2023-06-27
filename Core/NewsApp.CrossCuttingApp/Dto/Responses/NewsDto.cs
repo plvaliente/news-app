@@ -8,7 +8,7 @@ namespace NewsApp.CrossCuttingApp.Dto
         public string Description { get; set; }
         public string Content { get; set; }
         public string Author { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
         public string Source { get; set; }
         public string ImageUrl { get; set; }
     }

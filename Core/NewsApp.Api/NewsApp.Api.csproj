@@ -10,5 +10,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NewsApp.External.Services\NewsApp.External.Services.csproj" />
+    <ProjectReference Include="..\NewsApp.Services\NewsApp.Services.csproj" />
+  </ItemGroup>
+
 
 </Project>
