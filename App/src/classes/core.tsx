@@ -41,10 +41,12 @@ export const defState: StateApp = {
 export const AppContext = React.createContext(defState);
 
 export const dateToStr: (date: Dayjs | null) => string = (date) => {
-    return date !== null && date !== undefined ? date.toDate().toLocaleDateString('es-AR') : '';
+    if (date == null && date == undefined) return '';
+    const cstDate = date.toDate()
+    return date.toDate().toISOString();
 }
 export const screenDate: (date: string | null) => string = (date) => {
-    return dateToStr(date != null ? dayjs(date) : null);
+    return date !== null && date !== undefined ? dayjs(date).toDate().toLocaleDateString('es-AR') : '';
 }
 
 export const getnews: (
@@ -84,11 +86,11 @@ export const buildSearchGet: (search: SearchedState) => string | null = (search)
     words = words
         .map(w => w.trim())
         .filter(w => w.length > 0);
-    const keyParams: string = words.reduce((p, c, i) => (i === 1 ? `keywords=${p}` : p) + `&keywords=${c}`);
+    const keyParams: string = words.reduce((p, c, i) => p + `&keywords=${c}`);
     const dFr: string = dateToStr(from);
     const dTo: string = dateToStr(to);
 
-    return `/news/search?$dateFrom=${dFr}&dateTo=${dTo}&page=${page}&pageSize=${pageSize}&${keyParams}`;
+    return `news/search?dateFrom=${dFr}&dateTo=${dTo}&page=${page}&pageSize=${pageSize}&keywords=${keyParams}`;
 }
 
 export const buildTopGet: (ctry: string, pg: number, sz: number) => string = (ctry, pg, sz) => {
