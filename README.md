@@ -3,7 +3,9 @@ news-app es un projecto en react y net, el cual consume una API de noticias y la
 
 ## INFO
 
-la app no realiza todas las validaciones visuales ya que se entiende que escapa de la solucion esperada. No busca ser una solucion optima sino adecuada al tiempo disponible y espectativas del proyecto.
+la app no realiza todas las validaciones visuales ya que se entiende que escapa de la solucion esperada. No busca ser una solucion optima sino adecuada al tiempo disponible y espectativas del proyecto. 
+
+Por otra parte la web busca cumplir lo esperado, pero buscando mayor comodidad en la interfaz.
 
 ### Ejecucion
 
