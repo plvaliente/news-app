@@ -329,7 +329,7 @@
 	"variable": [
 		{
 			"key": "API_URL",
-			"value": "https://localhost:44376/api",
+			"value": "http://localhost:5000/api",
 			"type": "string"
 		}
 	]
