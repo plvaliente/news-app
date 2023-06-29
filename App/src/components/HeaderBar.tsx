@@ -3,9 +3,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import SearchIcon from '@mui/icons-material/Search';
-import dayjs from 'dayjs';
 import 'dayjs/locale/es';
-import { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -21,9 +19,9 @@ import countries from '../constants/countries.json'
 import { SEARCH, TOP } from '../constants/appConstants';
 import { AppContext } from '../classes/core';
 
-const HeaderBar: React.FC<{ searchCallback: (from: Date | null, to: Date | null, keywords: string) => void }> = ({ searchCallback }): React.ReactElement => {
+const HeaderBar: React.FC<{}> = (): React.ReactElement => {
   const state = React.useContext(AppContext);
-  const {keywords, from, to, mode, country, pageSize, setState } = state;
+  const {keywords, from, to, mode, country, pageSize, page, setState } = state;
 
 
   const PageSize: () => React.JSX.Element = () => {
@@ -114,7 +112,7 @@ const HeaderBar: React.FC<{ searchCallback: (from: Date | null, to: Date | null,
           endAdornment: (
             <InputAdornment 
             position="start"
-            onClick={() => { searchCallback(from?.toDate()!, to?.toDate()!, keywords) }}
+            onClick={() => { setState({...state, searched:{page, pageSize, from, to, keywords} })}}
             aria-label='search'>
               <SearchIcon />
             </InputAdornment>
