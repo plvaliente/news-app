@@ -27,7 +27,7 @@ const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywo
   const [keywords, setKeywords] = React.useState<string>('');
   const [from, setFrom] = React.useState<Dayjs | null>(dayjs().add(-1, 'day'));
   const [to, setTo] = React.useState<Dayjs | null>(dayjs());
-  const [mode, setMode] = React.useState<string>();
+  const [mode, setMode] = React.useState<string>(TOP);
   const [country, setCountry] = React.useState<number>(0);
   const [size, setSize] = React.useState<number>(10);
 

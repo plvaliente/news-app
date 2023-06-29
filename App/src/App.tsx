@@ -18,7 +18,7 @@ const darkTheme = createTheme({
   },
 });
 
-const mock: INews = newsMock;
+const API_URL: string = 'http://localhost:5000/api';
 
 const PaginationBar: (pages: number, onPageChg: (p: number) => void) => React.JSX.Element = (pages, onPageChg) => {
   return (
@@ -30,12 +30,31 @@ const PaginationBar: (pages: number, onPageChg: (p: number) => void) => React.JS
 
 const Spinner = () => <div className="loader"></div>;
 
-const getnews: (url: string, handleLoading: (load: boolean) => void) => Promise<void> = async (url, handleLoading) => {
+const buildSearchGet: (keywords: string ) => string = (keywords) => {
+  let words: string[] = keywords.split(',');
+  words = words
+    .map(w => w.trim())
+    .filter(w => w.length > 0);
+  
+    return words.reduce( (p, c, i) => (i === 1 ? `keywords=${p}` : p) + `&keywords=${c}`);
+  }
+
+  const buildTopGet: () => string = () => {
+      return 'news/top-headlines?country=AR&page=2&pageSize=5';
+    }
+  
+const getnews: (url: string, handleNews: (news: INews[]) => void, handleLoading: (load: boolean) => void) => Promise<void> = async (url, handleNews,handleLoading) => {
   handleLoading(true);
   try {
     const response: Response = await fetch(url);
     const news = await response.json();
     const castedNews: INewsResponse = news as INewsResponse;
+    if(castedNews.success){
+      handleNews(castedNews.data);
+    }
+    else {
+      console.log(castedNews.error);
+    } 
     handleLoading(false);
   }
   catch (e) {
@@ -45,8 +64,15 @@ const getnews: (url: string, handleLoading: (load: boolean) => void) => Promise<
 }
 
 export default function App() {
-  const [loading, setLoading] = React.useState(false);
 
+  const [news, setNews] = React.useState<INews[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  
+  React.useEffect(() => {
+    getnews(`${API_URL}/${buildTopGet()}`, (n)=> setNews(n), l => setLoading(l));
+  }, []);
+
+  console.log(buildSearchGet('adasd ,asdasda,adad,sasa,'))
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -58,10 +84,10 @@ export default function App() {
           <HeaderBar searchCallback={(a, b, c) => { }} />
           <Box
             sx={{ maxHeight: '75vh', overflowY: 'auto' }}>
-            {[...Array(10)].map((_, i) => {
+            {news.map((aNews, i) => {
               return (
                 <Box key={i} sx={{ m: 1 }}>
-                  <NewsCard {...newsMock} />
+                  <NewsCard {...aNews} />
                 </Box>
               );
             })}

@@ -3,7 +3,7 @@ export default interface INews {
     description: string;
     content: string;
     author: string;
-    date: Date | null;
+    date: string;
     source: string;
     imageUrl: string;
 }
