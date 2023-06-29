@@ -46,18 +46,22 @@ export default function App() {
     state.mode === TOP && topNews()
   }, [state.pageSize, state.country, state.mode]);
   React.useEffect(() => {
-    state.mode === SEARCH && state.searched != null ? searchNews() : topNews();
+    state.mode === SEARCH && state.searched != null ? searchNews(state.page) : topNews();
   }, [state.page]);
   React.useEffect(() => {
-    state.mode === SEARCH && searchNews();
+    state.mode === SEARCH && searchNews(null);
   }, [state.searched]);
 
   {/* FUNS */ }
-  const searchNews: () => void = () => getnews(
-    `${API_URL}/${buildSearchGet(state.searched)}`,
+  const searchNews: (p: number | null ) => void = (p) => {
+    const params = state.searched;
+    p != null && params != null ? params.page = p : params;
+    getnews(
+    `${API_URL}/${buildSearchGet(params)}`,
     (n) => setNews(n),
     l => setLoading(l),
     (p) => setPages(Math.ceil(p / state.pageSize)));
+    }
 
   const topNews: () => void = () => getnews(
     `${API_URL}/${buildTopGet(countries[state.country].code, state.page, state.pageSize)}`,
