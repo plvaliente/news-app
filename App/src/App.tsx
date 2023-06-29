@@ -5,20 +5,20 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import CssBaseline from '@mui/material/CssBaseline';
+import dayjs from 'dayjs';
+
 import HeaderBar from './components/HeaderBar';
 import INews from './interfaces/INews';
-import newsMock from './mocks/newsMock';
 import NewsCard from './components/NewsCard';
+import { AppContext, StateApp, buildTopGet, defState, getnews } from './classes/core';
+import { API_URL, TOP } from './constants/appConstants';
 import "./styles.css";
-import INewsResponse from './interfaces/INewsResponse';
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
   },
 });
-
-const API_URL: string = 'http://localhost:5000/api';
 
 const PaginationBar: (pages: number, onPageChg: (p: number) => void) => React.JSX.Element = (pages, onPageChg) => {
   return (
@@ -30,50 +30,19 @@ const PaginationBar: (pages: number, onPageChg: (p: number) => void) => React.JS
 
 const Spinner = () => <div className="loader"></div>;
 
-const buildSearchGet: (keywords: string ) => string = (keywords) => {
-  let words: string[] = keywords.split(',');
-  words = words
-    .map(w => w.trim())
-    .filter(w => w.length > 0);
-  
-    return words.reduce( (p, c, i) => (i === 1 ? `keywords=${p}` : p) + `&keywords=${c}`);
-  }
-
-  const buildTopGet: () => string = () => {
-      return 'news/top-headlines?country=AR&page=2&pageSize=5';
-    }
-  
-const getnews: (url: string, handleNews: (news: INews[]) => void, handleLoading: (load: boolean) => void) => Promise<void> = async (url, handleNews,handleLoading) => {
-  handleLoading(true);
-  try {
-    const response: Response = await fetch(url);
-    const news = await response.json();
-    const castedNews: INewsResponse = news as INewsResponse;
-    if(castedNews.success){
-      handleNews(castedNews.data);
-    }
-    else {
-      console.log(castedNews.error);
-    } 
-    handleLoading(false);
-  }
-  catch (e) {
-    console.log(e);
-    handleLoading(false);
-  }
-}
 
 export default function App() {
 
   const [news, setNews] = React.useState<INews[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  
+  const [state, setState] = React.useState<StateApp>(defState);
   React.useEffect(() => {
     getnews(`${API_URL}/${buildTopGet()}`, (n)=> setNews(n), l => setLoading(l));
   }, []);
 
-  console.log(buildSearchGet('adasd ,asdasda,adad,sasa,'))
   return (
+    <AppContext.Provider value={{...state, setState}}>
+
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Container maxWidth="md">
@@ -98,5 +67,7 @@ export default function App() {
         </Box>}
       </Container>
     </ThemeProvider>
+        
+    </AppContext.Provider>
   );
 }

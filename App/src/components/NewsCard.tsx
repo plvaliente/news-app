@@ -10,12 +10,13 @@ import Box from '@mui/material/Box';
 import dayjs from 'dayjs';
 
 const NewsCard: React.FC<INews> = ({ title, description, date, imageUrl, source }): React.ReactElement => {
-  const screenDate: string = date != null && date != undefined ? dayjs(date).toDate().toLocaleDateString('es-AR') : '';
-  
+  const screenDate: string = date !== null && date !== undefined ? dayjs(date).toDate().toLocaleDateString('es-AR') : '';
+  const imgOrDef: string = imageUrl !== null ? imageUrl : 'https://t4.ftcdn.net/jpg/02/51/95/53/360_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg'
+
   return (
     <Card sx={{display: 'flex', flexGrow: '1', flexDirection: 'row' }}>
       <CardMedia sx={{ width: '30%', alignContent: 'center', p: 1  }}>
-        <img src={imageUrl} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '5%'}}></img>
+        <img src={imgOrDef} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '5%'}}></img>
       </CardMedia>
       <Box sx={{ width: '70%'}}>
         <CardContent sx={{height: '80%'}}>

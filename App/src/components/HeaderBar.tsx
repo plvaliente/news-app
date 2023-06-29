@@ -17,19 +17,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import { DateNull } from '../classes/core';
 import countries from '../constants/countries.json'
+import { SEARCH, TOP } from '../constants/appConstants';
+import { AppContext } from '../classes/core';
 
-const TOP: string = 'Top';
-const SEARCH: string = 'Search';
-
-const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywords: string) => void }> = ({ searchCallback }): React.ReactElement => {
-  const [keywords, setKeywords] = React.useState<string>('');
-  const [from, setFrom] = React.useState<Dayjs | null>(dayjs().add(-1, 'day'));
-  const [to, setTo] = React.useState<Dayjs | null>(dayjs());
-  const [mode, setMode] = React.useState<string>(TOP);
-  const [country, setCountry] = React.useState<number>(0);
-  const [size, setSize] = React.useState<number>(10);
+const HeaderBar: React.FC<{ searchCallback: (from: Date | null, to: Date | null, keywords: string) => void }> = ({ searchCallback }): React.ReactElement => {
+  const state = React.useContext(AppContext);
+  const {keywords, from, to, mode, country, pageSize, setState } = state;
 
 
   const PageSize: () => React.JSX.Element = () => {
@@ -39,9 +33,9 @@ const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywo
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={size}
+          value={pageSize}
           label="Noticias"
-          onChange={(e) => setSize(e.target.value as number)}
+          onChange={(e) => setState({...state, pageSize: e.target.value as number})}
         >
           <MenuItem value={5}>5</MenuItem>
           <MenuItem value={10}>10</MenuItem>
@@ -57,7 +51,7 @@ const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywo
         <ToggleButtonGroup
           value={mode}
           exclusive
-          onChange={(_, val) => setMode(val)}
+          onChange={(_, val) => setState({...state, mode: val})}
           aria-label='Modo'
         >
           <ToggleButton value={TOP}>Top</ToggleButton>
@@ -76,7 +70,7 @@ const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywo
           id="demo-simple-select"
           value={country}
           label="Pais"
-          onChange={(e) => setCountry(e.target.value as number)}
+          onChange={(e) => setState({...state, country: e.target.value as number})}
         >
           {countries.map((_, idx) => {
             return (<MenuItem key={idx} value={idx}>{countries[idx].name}</MenuItem>);
@@ -94,13 +88,13 @@ const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywo
           label='Desde'
           sx={{ gridArea: 'from' }}
           value={from}
-          onChange={(val) => setFrom(val)}
+          onChange={(val) => setState({...state, from:val})}
           maxDate={to} />
         <DatePicker
           label='Hasta'
           sx={{ gridArea: 'to' }}
           value={to}
-          onChange={(val) => setTo(val)}
+          onChange={(val) => setState({...state, to:val})}
           minDate={from} />
       </LocalizationProvider>
     );
@@ -114,7 +108,7 @@ const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywo
         label="Keywords"
         placeholder='Ej: futbol, pelota, messi'
         value={keywords}
-        onChange={(e: any) => setKeywords(e.target.value)}
+        onChange={(e: any) => setState({...state, keywords:e.target.value})}
         InputProps={{
           'aria-label': 'search news',
           endAdornment: (
@@ -159,7 +153,7 @@ const HeaderBar: React.FC<{ searchCallback: (from: DateNull, to: DateNull, keywo
           }}
         >
           <DateRange />
-          <Search />
+          {Search()}
         </Toolbar>}
       </AppBar>
     </Box>
