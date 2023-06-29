@@ -6,11 +6,10 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import INews from '../interfaces/INews';
+import { screenDate } from '../classes/core';
 import Box from '@mui/material/Box';
-import dayjs from 'dayjs';
 
 const NewsCard: React.FC<INews> = ({ title, description, date, imageUrl, source }): React.ReactElement => {
-  const screenDate: string = date !== null && date !== undefined ? dayjs(date).toDate().toLocaleDateString('es-AR') : '';
   const imgOrDef: string = imageUrl !== null ? imageUrl : 'https://t4.ftcdn.net/jpg/02/51/95/53/360_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg'
 
   return (
@@ -29,7 +28,7 @@ const NewsCard: React.FC<INews> = ({ title, description, date, imageUrl, source 
         </CardContent>
         <CardActions sx={{height: '20%', flexDirection: 'row', justifyContent: 'space-between'}}>
           <Typography variant='caption' color='text.secondary'>
-            {screenDate}
+            {screenDate(date)}
           </Typography>
           <Button size='small' href={source}>Ver Mas</Button>
         </CardActions>

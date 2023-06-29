@@ -10,8 +10,9 @@ import dayjs from 'dayjs';
 import HeaderBar from './components/HeaderBar';
 import INews from './interfaces/INews';
 import NewsCard from './components/NewsCard';
-import { AppContext, StateApp, buildTopGet, defState, getnews } from './classes/core';
+import { AppContext, StateApp, buildSearchGet, buildTopGet, defState, getnews } from './classes/core';
 import { API_URL, TOP } from './constants/appConstants';
+import countries from './constants/countries.json'
 import "./styles.css";
 
 const darkTheme = createTheme({
@@ -35,10 +36,34 @@ export default function App() {
 
   const [news, setNews] = React.useState<INews[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [pages, setPages] = React.useState<number>(1);
   const [state, setState] = React.useState<StateApp>(defState);
   React.useEffect(() => {
-    getnews(`${API_URL}/${buildTopGet()}`, (n)=> setNews(n), l => setLoading(l));
+    topNews()
   }, []);
+  React.useEffect(() => {
+    state.mode === TOP && topNews()
+  }, [state.pageSize, state.country]);
+
+  React.useEffect(() => {
+    state.mode === TOP ? topNews() : searchNews();
+  }, [state.page]);
+
+  const searchNews: () => void = () => getnews(
+    `${API_URL}/${buildSearchGet(state.searched)}`, 
+    (n)=> setNews(n), 
+    l => setLoading(l),
+    (p) =>setPages(Math.ceil(p/state.pageSize)));
+
+  const topNews: () => void = () => getnews(
+    `${API_URL}/${buildTopGet(countries[state.country].code, state.page, state.pageSize)}`, 
+    (n)=> setNews(n), 
+    l => setLoading(l),
+    (p) => setPages(Math.ceil(p/state.pageSize)));
+
+  function handlerPageChange(p: number): void {
+    setState({...state, page: p})
+  }
 
   return (
     <AppContext.Provider value={{...state, setState}}>
@@ -50,7 +75,7 @@ export default function App() {
           <Spinner />
         </div>}
         {!loading && <Box sx={{ m: 2 }}>
-          <HeaderBar searchCallback={(a, b, c) => { }} />
+          <HeaderBar/>
           <Box
             sx={{ maxHeight: '75vh', overflowY: 'auto' }}>
             {news.map((aNews, i) => {
@@ -62,7 +87,7 @@ export default function App() {
             })}
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1}}>
-            {PaginationBar(1, (_) => { })}
+            {PaginationBar(pages, handlerPageChange)}
           </Box>
         </Box>}
       </Container>
