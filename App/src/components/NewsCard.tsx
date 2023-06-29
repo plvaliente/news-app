@@ -5,7 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import INews from '../interfaces/inews';
+import INews from '../interfaces/INews';
 import Box from '@mui/material/Box';
 
 const NewsCard: React.FC<INews> = ({ title, description, date, imageUrl, source }): React.ReactElement => {

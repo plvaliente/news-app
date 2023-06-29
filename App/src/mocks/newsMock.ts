@@ -1,4 +1,4 @@
-import INews from "../interfaces/inews";
+import INews from "../interfaces/INews";
 
 const newsMock: INews = {
     author: "mocked", 
