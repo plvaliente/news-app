@@ -22,6 +22,7 @@ namespace NewsApp.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddScoped<INewsService, NewsService>();
             services.AddScoped<IExternalNewsService, NewsApiService>();
             services.AddAutoMapper(typeof(MapperConfig));
@@ -31,12 +32,18 @@ namespace NewsApp.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors(options =>
+            {
+                options.AllowAnyOrigin();
+                options.AllowAnyMethod();
+                options.AllowAnyOrigin();
+            });
 
             app.UseRouting();
 

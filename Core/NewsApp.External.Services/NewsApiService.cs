@@ -98,7 +98,7 @@ namespace NewsApp.External.Services
                 Description = i.Description,
                 Date = i.PublishedAt,
                 ImageUrl = i.UrlToImage,
-                Source = i.Source.Name
+                Source = i.Url
             };
         }
 
