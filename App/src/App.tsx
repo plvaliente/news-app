@@ -5,13 +5,11 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import CssBaseline from '@mui/material/CssBaseline';
-import dayjs from 'dayjs';
-
 import HeaderBar from './components/HeaderBar';
 import INews from './interfaces/INews';
 import NewsCard from './components/NewsCard';
 import { AppContext, StateApp, buildSearchGet, buildTopGet, defState, getnews } from './classes/core';
-import { API_URL, TOP } from './constants/appConstants';
+import { API_URL, SEARCH, TOP } from './constants/appConstants';
 import countries from './constants/countries.json'
 import "./styles.css";
 
@@ -34,65 +32,71 @@ const Spinner = () => <div className="loader"></div>;
 
 export default function App() {
 
+  {/* STATE */ }
   const [news, setNews] = React.useState<INews[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [pages, setPages] = React.useState<number>(1);
   const [state, setState] = React.useState<StateApp>(defState);
+
+  {/* UPDATERS */ }
   React.useEffect(() => {
     topNews()
   }, []);
   React.useEffect(() => {
     state.mode === TOP && topNews()
-  }, [state.pageSize, state.country]);
-
+  }, [state.pageSize, state.country, state.mode]);
   React.useEffect(() => {
-    state.mode === TOP ? topNews() : searchNews();
+    state.mode === SEARCH && state.searched != null ? searchNews() : topNews();
   }, [state.page]);
+  React.useEffect(() => {
+    state.mode === SEARCH && searchNews();
+  }, [state.searched]);
 
+  {/* FUNS */ }
   const searchNews: () => void = () => getnews(
-    `${API_URL}/${buildSearchGet(state.searched)}`, 
-    (n)=> setNews(n), 
+    `${API_URL}/${buildSearchGet(state.searched)}`,
+    (n) => setNews(n),
     l => setLoading(l),
-    (p) =>setPages(Math.ceil(p/state.pageSize)));
+    (p) => setPages(Math.ceil(p / state.pageSize)));
 
   const topNews: () => void = () => getnews(
-    `${API_URL}/${buildTopGet(countries[state.country].code, state.page, state.pageSize)}`, 
-    (n)=> setNews(n), 
+    `${API_URL}/${buildTopGet(countries[state.country].code, state.page, state.pageSize)}`,
+    (n) => setNews(n),
     l => setLoading(l),
-    (p) => setPages(Math.ceil(p/state.pageSize)));
+    (p) => setPages(Math.ceil(p / state.pageSize)));
 
   function handlerPageChange(p: number): void {
-    setState({...state, page: p})
+    setState({ ...state, page: p })
   }
 
   return (
-    <AppContext.Provider value={{...state, setState}}>
+    <AppContext.Provider value={{ ...state, setState }}>
 
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <Container maxWidth="md">
-        {loading && <div className="pos-center">
-          <Spinner />
-        </div>}
-        {!loading && <Box sx={{ m: 2 }}>
-          <HeaderBar/>
-          <Box
-            sx={{ maxHeight: '75vh', overflowY: 'auto' }}>
-            {news.map((aNews, i) => {
-              return (
-                <Box key={i} sx={{ m: 1 }}>
-                  <NewsCard {...aNews} />
-                </Box>
-              );
-            })}
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1}}>
-            {PaginationBar(pages, handlerPageChange)}
-          </Box>
-        </Box>}
-      </Container>
-    </ThemeProvider>
-        
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <Container maxWidth="md">
+          {loading && <div className="pos-center">
+            <Spinner />
+          </div>}
+          {!loading && <Box sx={{ m: 2 }}>
+            <HeaderBar />
+            <Box
+              sx={{ maxHeight: '75vh', overflowY: 'auto' }}>
+              {news.map((aNews, i) => {
+                return (
+                  <Box key={i} sx={{ m: 1 }}>
+                    <NewsCard {...aNews} />
+                  </Box>
+                );
+              })}
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+              {PaginationBar(pages, handlerPageChange)}
+            </Box>
+          </Box>}
+        </Container>
+      </ThemeProvider>
+
     </AppContext.Provider>
   );
 }
